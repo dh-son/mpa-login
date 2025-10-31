@@ -12,3 +12,10 @@
   - UserService: User 등록, 조회
 - 인증된 사용자 정보 클래스 정의
   - CustomUserDetails: Spring Security에서 사용자 정보를 담는 custom UserDetails
+- 로그인 인증 처리 클래스 정의
+  - CustomUserDetailsService: 로그인 시 사용자 정보를 DB에서 조회하고 검증한 뒤 spring security가 이해할 수 있는 형태로 래핑해서 반환
+    - 사용자가 로그인할 때 아이디(username)를 기반으로 사용자 정보를 불러오는 핵심 인터페이스
+    - 로그인 시점에 spring security가 자동으로 이 클래스를 찾아서 loadUserByUsername() 메소드 호출
+    - loadUserByUsername() return 값을 기반으로 사용자 인증 진행
+    - 즉, 로그인 인증 흐름에 시작점
+    - 어플리케이션의 사용자 정보를 spring security가 이해할 수 있는 형태로 변환
