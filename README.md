@@ -10,3 +10,5 @@
 - 서비스 클래스 정의
   - TodoService: Todo 등록, 수정, 삭제, 조회
   - UserService: User 등록, 조회
+- 인증된 사용자 정보 클래스 정의
+  - CustomUserDetails: Spring Security에서 사용자 정보를 담는 custom UserDetails
