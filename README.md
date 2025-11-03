@@ -19,3 +19,7 @@
     - loadUserByUsername() return 값을 기반으로 사용자 인증 진행
     - 즉, 로그인 인증 흐름에 시작점
     - 어플리케이션의 사용자 정보를 spring security가 이해할 수 있는 형태로 변환
+- 리스너와 핸들러 구현
+  - AuthenticationEventListeners: spring security 인증 관련 이벤트들을 수신하여 처리
+  - CustomLoginFailureHandler: 로그인 실패 시 자동 실행되는 커스텀 핸들러 클래스
+  - CustomLoginSuccessHandler: 로그인 성공 시 자동 실행되는 커스텀 핸들러 클래스
