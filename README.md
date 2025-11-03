@@ -23,3 +23,9 @@
   - AuthenticationEventListeners: spring security 인증 관련 이벤트들을 수신하여 처리
   - CustomLoginFailureHandler: 로그인 실패 시 자동 실행되는 커스텀 핸들러 클래스
   - CustomLoginSuccessHandler: 로그인 성공 시 자동 실행되는 커스텀 핸들러 클래스
+- 스프링 시큐리티 설정
+  - SecurityConfig: Spring security 설정의 시작점
+    - PasswordEncoder: 비밀번호 암호화
+    - SecurityFilterChain: 보안 설정의 핵심 구성 요소
+    - AuthenticationSuccessHandler: 로그인 성공 시 실행될 핸들러
+    - AuthenticationFailureHandler: 로그인 실패 시 실핼될 핸들러
