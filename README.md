@@ -28,4 +28,8 @@
     - PasswordEncoder: 비밀번호 암호화
     - SecurityFilterChain: 보안 설정의 핵심 구성 요소
     - AuthenticationSuccessHandler: 로그인 성공 시 실행될 핸들러
-    - AuthenticationFailureHandler: 로그인 실패 시 실핼될 핸들러
+    - AuthenticationFailureHandler: 로그인 실패 시 실행될 핸들러
+- 컨트롤러 클래스 정의
+  - HomeController
+  - TodoController: 할 일 목록 조회, 추가, 삭제, 수정
+  - UserController: 회원 가입
