@@ -1,0 +1,43 @@
+<!DOCTYPE html> <!-- 문서 유형 선언: HTML5 문서임을 명시 -->
+<html xmlns:th="http://www.thymeleaf.org"> <!-- Thymeleaf 템플릿 엔진을 사용할 수 있도록 XML 네임스페이스 선언 -->
+<head>
+    <meta charset="UTF-8"> <!-- 문자 인코딩 설정:UTF-8 -->
+    <title>Home</title> <!-- 브라우저 탭에 표시될 문서 제목 -->
+
+    <!-- Materialize CSS CDN을 통한 스타일시트 불러오기 -->
+    <link href="https:/cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+
+    <!-- 구글 Materialize icons 아이콘 폰트 불러오기 -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- 반응형 웹을 위한 뷰포트 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<!-- 배경생이 연한 파란색인 body -->
+<body class="blue lighten-5">
+    <!-- 페이지 전체를 가운데 정렬하고 위쪽에 여백을 준 컨테이너 -->
+    <div class="container center-align" style="margin-top: 10%;">
+        <!-- 앱 환경 문구, 짙은 파란색 텍스트 -->
+        <h3 class="blue-text test-darken-2">Welcome to the To-Do App</h3>
+
+        <!-- 버튼 영역 섹션 -->
+        <div class="section">
+            <!-- 할 일 목록 페이지로 이동하는 버튼, Materialize 아이콘과 스타일 포함 -->
+            <a href="/todos" class="btn-large waves-effect waves-light blue darken-2" style="margin: 10px;">
+                <!-- 왼쪽에 list 아이콘 -->
+                <i class="material-icons left">list</i>View My Todos
+            </a>
+            <!-- 로그인 페이지로 이동하는 버튼 -->
+            <a href="/login" class="btn-large waves-effect waves-light teal darken-2" style="margin: 10px;">
+                <!-- 왼쪽에 list 아이콘 -->
+                <i class="material-icons left">login</i>Login
+            </a>
+        </div>
+    </div>
+
+    <!-- Materialize 버튼 클릭 시 효과 등  UI 인터렉션을 위한 스크립트 -->
+
+
+</body>
+
+</html>

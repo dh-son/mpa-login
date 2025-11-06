@@ -1,0 +1,47 @@
+<!DOCTYPE html> <!-- 문서 유형 선언: HTML5 문서임을 명시 -->
+<html xmlns:th="http://www.thymeleaf.org"> <!-- Thymeleaf 템플릿 엔진을 사용할 수 있도록 XML 네임스페이스 선언 -->
+<head>
+    <title>Login</title> <!-- 브라우저 탭에 표시될 문서 제목 -->
+
+    <!-- Materialize CSS CDN을 통한 스타일시트 불러오기 -->
+    <link href="https:/cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+
+    <!-- Materialize JavaScript 라이브러리(버튼 등 인터렉션용 -->
+    <script src="https:/cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<body>
+    <!-- 콘텐츠를 중앙에 정렬하고 너비를 제한하는 컨테이너 -->
+    <div class="container">
+        <h4 class="center-align">Login</h4> <!-- 가운데 정렬된 로그엔 제목 -->
+
+        <!-- 로그인 폼 시작: POST 메소드, /login으로 전송 (Thymeleaf @{} 문법 사용) -->
+        <form method="post" th:action="@{/login}" class="row">
+            <!-- 사용자 이름 입력 필드 -->
+            <div class="input-field col s12"> <!-- 12칸 전체 너비 사용 -->
+                <!-- 사용자 이름 입력 필수 -->
+                <input type="text" name="username" id="username" required>
+                <label for="username">Username</label> <!-- 입력 필드용 라벨 -->
+            </div>
+
+            <!-- 비밀번호 입력 필드 -->
+            <div class="input-field col s12"> <!-- 12칸 전체 너비 사용 -->
+                <!-- 비밀번호 이름 입력 필수 -->
+                <input type="password" name="password" id="password" required>
+                <label for="password">Password</label> <!-- 입력 필드용 라벨 -->
+            </div>
+
+            <!-- 제출 버튼 -->
+            <div class="col s12 center-align"> <!-- 버튼을 가운데 정렬 -->
+                <!-- 파란색 로그인 버튼 -->
+                <button type="submit" class="btn waves-effect waves-light blue">Login</button>
+            </div>
+        </form>
+
+        <!-- 회원가입 링크 -->
+        <p class="center-align">
+            <!-- 회원가입 안내 문구 및 링크 -->
+            <a href="/users/register" class="blue-text">Don't have an account? Sign up</a>
+        </p>
+    </div>
+</body>
+</html>

@@ -33,3 +33,9 @@
   - HomeController
   - TodoController: 할 일 목록 조회, 추가, 삭제, 수정
   - UserController: 회원 가입
+- 타임리프웹화면생성
+  - index.html
+  - login.html
+  - register.html
+  - edit_todo.html
+  
