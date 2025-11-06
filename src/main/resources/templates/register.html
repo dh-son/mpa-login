@@ -1,0 +1,55 @@
+<!DOCTYPE html> <!-- 문서 유형 선언: HTML5 문서임을 명시 -->
+<html xmlns:th="http://www.thymeleaf.org"> <!-- Thymeleaf 템플릿 엔진을 사용할 수 있도록 XML 네임스페이스 선언 -->
+<head>
+    <title>Register</title> <!-- 브라우저 탭에 표시될 문서 제목 -->
+
+    <!-- Materialize CSS CDN을 통한 스타일시트 불러오기 -->
+    <link href="https:/cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+
+    <!-- Materialize JavaScript 라이브러리(버튼 등 인터렉션용 -->
+    <script src="https:/cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<body>
+    <div class="section"> <!-- 섹션 구역: 상하 여백이 있는 블록 -->
+        <h4 class="center-align">Resister</h4> <!-- 가운데 정렬된 "Resister" 제목 -->
+
+        <!-- 이메일 형식 오류가 있을 경우 표시되는 메시지 박스 -->
+        <div th:if="${emailError}" class="card-panel red lighten-2 white-text center-align">
+            <p th:text="${emailError}"></p> <!-- 서버에서 전달된 오류 메시지 출력 -->
+        </div>
+
+        <!-- 중복 가입 오류 등 일반 오류 메시지 표시 영역 -->
+        <div th:if="${error}" class="card-panel red lighten-2 white-text center-align">
+            <p th:text="${error}"></p> <!-- 서버에서 전달된 오류 메시지 출력 -->
+        </div>
+
+        <!-- 회원가입 폼 시작 -->
+        <!-- POST 방식으로 /users/register로 제출 -->
+        <form method="post" th:action="@{/users/register}" class="row" >
+            <!-- 이메일(유저명) 입력 필드 -->
+            <div class="input-field col s12"> <!-- 12칸 전체 너비 사용 -->
+                <input type="text" name="username" id="username" required> <!-- 필수 입력 필드 -->
+                <label for="username">Email(Username)</label> <!-- 입력 필드 라벨 -->
+            </div>
+
+            <!-- 비밀번호 입력 필드 -->
+            <div class="input-field col s12"> <!-- 12칸 전체 너비 사용 -->
+                <input type="password" name="password" id="password" required> <!-- 필수 입력 필드 -->
+                <label for="password">Password</label> <!-- 입력 필드 라벨 -->
+            </div>
+
+            <!-- 제출 버튼 -->
+            <div class="col s12 center-align"> <!-- 버튼을 가운데 정렬 -->
+                <!-- 파란색 회원가입 버튼 -->
+                <button type="submit" class="btn waves-effect waves-light blue">Register</button>
+            </div>
+        </form>
+
+        <!-- 로그인 페이지로 이동하는 링크 -->
+        <p class="center-align">
+            <!-- 로그인 안내 문구 및 링크 -->
+            <a href="/login" class="blue-text">Already have an account? Login</a>
+        </p>
+    </div>
+</body>
+</html>

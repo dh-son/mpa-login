@@ -1,0 +1,95 @@
+<!DOCTYPE html> <!-- 문서 유형 선언: HTML5 문서임을 명시 -->
+<html xmlns:th="http://www.thymeleaf.org"> <!-- Thymeleaf 템플릿 엔진을 사용할 수 있도록 XML 네임스페이스 선언 -->
+<head>
+    <title>Todo List</title> <!-- 브라우저 탭에 표시될 문서 제목 -->
+
+    <!-- Materialize CSS 프레임워크 로드 -->
+    <link rel="stylesheet" href="https:/cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- 페이지 로드 후 실행될 JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          M.updateTextFields(); // 입력 필드 라벨 위치 초기화
+          const titleInput = document.getElementById("title"); // 제목 입력 필드 참조
+          const descriptionInput = document.getElementById("description"); // 설명 입력 필드 참조
+          M.textareaAutoResize(titleInput); // 제목 필드 높이 자동 조절
+          M.textareaAutoResize(descriptionInput); // 설명 필드 높이 자동 조절
+        });
+    </script>
+
+    <!-- 사용자 정의 스타일 -->
+    <style>
+        .todo-item {
+            display: flex; /* 가로 배치 */
+            justify-content: space-between; /* 양끝 정렬 */
+            align-items: center; /* 수직 중앙 정렬 */
+            padding: 15px; /* 내부 여부 */
+        }
+        .todo-buttons {
+            display: flex; /* 버튼 가로 정렬 */
+            gap: 10px; /* 버튼 사이 여백 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container"> <!-- 페이지 전체 중앙 정렬 및 너비 제한 -->
+        <h4 class="center-align">My Todos</h4> <!-- 가운데 정렬한 제목 -->
+
+        <!-- 로그아웃 버튼 폼 (오른쪽 정렬) -->
+        <div class="right-align">
+            <form method="post" th:action="@{/logout}"> <!-- POST 요청으로 로그아웃 -->
+                <button type="submit" class="btn waves-effect waves-light red">Logout</button>
+            </form>
+        </div>
+
+        <!-- 새 할 일 추가 폼 -->
+        <form method="post" th:action="@{/todos/add}" class="row"> <!-- POST 요청으로 할 일 추가 -->
+            <!-- 제목 입력 필드 -->
+            <div class="input-field col s6"> <!-- 6칸 전체 너비 사용 -->
+                <input type="text" name="title" id="title" class="validate" required> <!-- 필수 입력 필드 -->
+                <label for="title" class="active">Title</label> <!-- 입력 필드 라벨 -->
+            </div>
+
+            <!-- 설명 입력 필드 -->
+            <div class="input-field col s6"> <!-- 6칸 전체 너비 사용 -->
+                <input type="text" name="description" id="description" class="validate"> <!-- 선택 입력 필드 -->
+                <label for="description" class="active">Description</label> <!-- 입력 필드 라벨 -->
+            </div>
+
+            <!-- 제출 버튼 -->
+            <div class="col s12 center-align"> <!-- 버튼을 가운데 정렬 -->
+                <!-- 파란색 등록 버튼 -->
+                <button type="submit" class="btn waves-effect waves-light blue">Add Todo</button>
+            </div>
+        </form>
+
+        <!-- 할 일 목록이 존재할 경우 표시 -->
+        <div th:if="${todos != null and not #lists.isEmpty(todos)}">
+            <ul class="collection"> <!-- Materialize 스타일 목록 -->
+                <!-- 각 할 일을 반복하면서 렌더링 -->
+                <li class="collection-item todo-item" th:each="todo : ${todos}">
+                    <div>
+                        <strong th:text="${todo.title}"></strong> <!-- 할 일 제목 출력 -->
+                        <p th:text="${todo.description}"></p> <!-- 할 일 설명 출력 -->
+                    </div>
+                    <div class="todo-buttons">
+                        <!-- 수정 버튼 (해당 todo의 ID로 링크 구성) -->
+                        <a th:href="@{'/todos/edit/' + ${todo.id}}" class="btn-small waves-effect waves-light orange">Edit</a>
+
+                        <!-- 삭제 폼 (DELETE 요청 시뮬레이션) -->
+                        <form method="post" th:action="@{'/todos/delete/' + ${todo.id}}">
+                            <input type="hidden" name="method" value="delete" /> <!-- delete 요청으로 처리됨을 명시 -->
+                            <button type="submit" class="btn-small waves-effect waves-light red">Delete</button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 할 일이 없을 경우 메시지 출력 -->
+        <p class="center-align" th:if="${todos == null or #lists.isEmpty(todos)}">
+            No todos available. Add a new task above.
+        </p>
+    </div>
+</body>
+</html>

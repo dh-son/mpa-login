@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- 문서 유형 선언: HTML5 문서임을 명시 -->
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Thymeleaf 템플릿 엔진을 사용할 수 있도록 XML 네임스페이스 선언 -->
+<head>
+    <title>Edit Todo</title>
+    <!-- 브라우저 탭에 표시될 문서 제목 -->
+
+    <!-- Materialize CSS CDN을 통한 스타일시트 불러오기 -->
+    <link
+            href="https:/cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+            rel="stylesheet"
+    />
+
+    <!-- Materialize JavaScript 라이브러리(버튼 등 인터렉션용 -->
+    <script src="https:/cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<body>
+<div class="section"> <!-- 여백을 주는 섹션 레이아웃 -->
+    <h4 class="center-align"> Edit Todo</h4> <!-- 가운데 정렬된 제목 -->
+
+    <!-- 할일 수정 폼-->
+    <form method="post" th:action="@{'/todos/update/' + ${todo.id}}" class="row"> <!-- POST 요청으로 해당 할 일 ID 업데이트 -->
+        <!-- 제목 입력 필드 -->
+        <div class="input-field col s12"> <!-- 12칸 전체 너비 사용 -->
+            <input type="text" name="title" id="title" th:value="${todo.title}" required> <!-- 기존 제목 값을 기본값으로 설정 -->
+            <label for="title">Title</label> <!-- 제목 필드 라벨 -->
+        </div>
+
+        <!-- 설명 입력 필드 -->
+        <div class="input-field col s12"> <!-- 12칸 전체 너비 사용 -->
+            <input type="text" name="description" id="description" th:value="${todo.description}"> <!-- 기존 설명 값 설정 -->
+            <label for="description">Description</label> <!-- 설명 필드 라벨 -->
+        </div>
+
+        <!-- 제출 버튼 -->
+        <div class="col s12 center-align"> <!-- 버튼을 가운데 정렬 -->
+            <button type="submit" class="btn waves-effect waves-light blue">Update</button> <!-- 파란색 수정 버튼 -->
+            <a href="/todos" class="btn waves-effect waves-light grey">Cancel</a> <!-- 회색 취소 버튼, 목록으로 돌아감 -->
+        </div>
+    </form>
+</div>
+</body>
+</html>
