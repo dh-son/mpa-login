@@ -38,4 +38,15 @@
   - login.html
   - register.html
   - edit_todo.html
+   
+## 2.소셜로그인
+- 소셜 로그인 코드
+  - User: 소셜 로그인 유형, 소셜 로그인 ID 필드 추가
+  - OAuthAttributes: OAuth 인증 후 반환된 사용자 정보를 담는 DTO 클래스
+  - CustomOAuth2User: OAuth 로그인 사용자의 정보를 확장하여 커스텀 유저 객체로 만드는 클래스
+                      소셜로그인 사용자를 위한 확장 클래스(서비스에서 필요로 하는 사용자 정보를 쉽게 활용)
+  - CustomOAuth2UserService: 소셜 로그인 사용자 정보와 회원 가입 처리 클래스
+  - SecurityConfig: OAuth2 로그인 설정
+  - TodoController: OAuth 사용자 정보로 캐스팅 변경
+  - login.html: 구글 로그인 버튼 추가
   

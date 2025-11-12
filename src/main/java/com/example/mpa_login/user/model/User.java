@@ -20,6 +20,9 @@ public class User {
     private String username; // 사용자 이름 (또는 이메일 등 로그인 식별자)
     private String password; // 사용자 비밀번호 (암호화: BCryptPasswordEncoder 등)
 
+    private String socialType; // 소셜 로그인 유형 (예: GOOGLE, KAKAO 등)
+    private String socialId; // 소셜 로그인 ID (외부에서 제공자에게 받은 사용자 식별자)
+
     // 사용자와 할 일 간의 1:N 관계 매핑
     // mappedBy: Todo 엔티티의 "user" 필드를 기준으로 관계를 설정함
     @OneToMany(mappedBy = "user")
