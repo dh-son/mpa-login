@@ -1,5 +1,6 @@
 package com.example.mpa_login.todo;
 
+import com.example.mpa_login.security.model.CustomOAuth2User;
 import com.example.mpa_login.security.model.CustomUserDetails;
 import com.example.mpa_login.todo.model.Todo;
 import com.example.mpa_login.user.UserService;
@@ -13,6 +14,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 할 일(Todo) 목록과 관련된 웹 요청을 처리하는 컨트롤러
+ * # 보안 및 인증 처리 방식 요약
+ * - Authentication 객체에서 로그인된 사용자 정보를 꺼냄
+ * - OAuth2 로그인 사용자의 경우 CustomOAuth2User 로 캐스팅
+ * - 사용자 ID로 할 일 소유자와 비교하여 권한이 있는 사용자만 조작 가능
+ * # 연계 흐름 예시
+ * 1. 사용자가 로그인(OAuth2) -> CustomOAuthUser 로 인증 정보 저장
+ * 2. 사용자가 /todos 접근 -> 해당 사용자에게 연결된 Todo 목록 조회
+ * 3. 할 일 추가/삭제/수정 -> 사용자 ID로 검증 후 조작
+ */
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/todos") // /todos 경로 이하의 요청을 처리
@@ -20,6 +32,11 @@ public class TodoController {
 
     private final TodoService todoService;
     private final UserService userService;
+
+    /**
+     * 공통된 인증 처리 방식
+     * CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+     */
 
     // 사용자의 할 일 목록을 조회하여 뷰에 전달
     @GetMapping
@@ -31,11 +48,11 @@ public class TodoController {
             return "redirect:/login";
         }
 
-        // 사용자 정보를 커스텀 객체로 캐스팅
-        CustomUserDetails customUserDetails = (CustomUserDetails) principal;
+        // OAuth 사용자 정보로 캐스팅
+        CustomOAuth2User customOAuth2User = (CustomOAuth2User) principal;
 
         // 사용자 정보 DB 조회
-        Optional<User> user = userService.findByUsername(customUserDetails.getUsername());
+        Optional<User> user = userService.findByUsername(customOAuth2User.getUsername());
         if (user.isEmpty()) { // 사용자가 존재하지 않으면 로그인 페이지로 리다이렉트
             return "redirect:/login";
         }
@@ -56,10 +73,10 @@ public class TodoController {
             return "redirect:/login";
         }
 
-        CustomUserDetails customUserDetails = (CustomUserDetails) principal;
+        CustomOAuth2User customOAuth2User = (CustomOAuth2User) principal;
 
         User user = new User(); // 사용자 객체 생성
-        user.setId(customUserDetails.getUserId()); // 로그인한 사용자 ID 설정
+        user.setId(customOAuth2User.getUserId()); // 로그인한 사용자 ID 설정
 
         // 할 일을 사용자와 함께 저장
         todoService.addTodo(todo, user);
@@ -76,10 +93,10 @@ public class TodoController {
             return "redirect:/login";
         }
 
-        CustomUserDetails customUserDetails = (CustomUserDetails) principal;
+        CustomOAuth2User customOAuth2User = (CustomOAuth2User) principal;
 
         User user = new User();
-        user.setId(customUserDetails.getUserId());
+        user.setId(customOAuth2User.getUserId());
 
         // 사용자 정보와 함께 해당 ID의 할 일을 삭제
         todoService.deleteTodoById(id, user);
@@ -96,9 +113,9 @@ public class TodoController {
             return "redirect:/login";
         }
 
-        CustomUserDetails customUserDetails = (CustomUserDetails) principal;
+        CustomOAuth2User customOAuth2User = (CustomOAuth2User) principal;
 
-        Long userId = customUserDetails.getUserId();
+        Long userId = customOAuth2User.getUserId();
 
         // 해당 ID의 할 일 조회
         Optional<Todo> todo = todoService.getTodoById(id);
@@ -127,13 +144,27 @@ public class TodoController {
             return "redirect:/login";
         }
 
-        CustomUserDetails customUserDetails = (CustomUserDetails) principal;
+        CustomOAuth2User customOAuth2User = (CustomOAuth2User) principal;
 
         User user = new User();
-        user.setId(customUserDetails.getUserId());
+        user.setId(customOAuth2User.getUserId());
 
         // 수정된 정보로 업데이트
         todoService.updateTodo(id, title, description, user);
         return "redirect:/todos"; // 목록으로 리다이렉트
     }
 }
+
+/**
+ * 보안 및 인증 처리 방식 요약
+ * - Authentication 객체에서 로그인된 사용자 정보를 꺼냄
+ * - OAuth2 로그인 사용자의 경우 CustomOAuth2User 로 캐스팅
+ * - 사용자 ID로 할 일 소유자와 비교하여 권한이 있는 사용자만 조작 가능
+ */
+
+/**
+ * 연계 흐름 예시
+ * 1. 사용자가 로그인(OAuth2) -> CustomOAuthUser 로 인증 정보 저장
+ * 2. 사용자가 /todos 접근 -> 해당 사용자에게 연결된 Todo 목록 조회
+ * 3. 할 일 추가/삭제/수정 -> 사용자 ID로 검증 후 조작
+ */
