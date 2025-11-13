@@ -66,7 +66,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String email = attributes.getEmail();
         String picture = attributes.getPicture();
         String id = attributes.getId();
-        String socialType = "google"; // 현재는 Google만 처리
+        String socialType = registrationId; // 현재는 Google만 처리
 
         log.info("loadUser nameAttributeKey = " + nameAttributeKey);
         log.info("loadUser name = " + name);
