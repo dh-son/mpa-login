@@ -49,4 +49,24 @@
   - SecurityConfig: OAuth2 로그인 설정
   - TodoController: OAuth 사용자 정보로 캐스팅 변경
   - login.html: 구글 로그인 버튼 추가
+- 소셜 로그인 기능 동작 순서
+  1. 로그인 페이지에 소셜 로그인 버튼 만들기: login.html
+     - /oauth2/authorization/google 경로로 요청 발생
+     - Spring Security 가 알아서 구글 로그엔 페이지로 전송
+  2. Spring Security 에서 소셜 로그인 설정하기: SecurityConfig.java
+     - OAuth2 로그인 설정
+  3. 구글 OAuth 정보 설정: application.yml
+     - OAuth2 클라이언트 정보를 기반으로 spring boot 는 구글과 자동으로 통신 구성
+  4. 사용자 정보 매핑하기: OAuthAttributes.java
+     - 구글에서 넘겨준 사용자 정보를 자바 객체로 변환해서 쉽게 사용할 수 있도록 도와줌
+  5. 사용자 DB 저장 또는 조회 + 인증 객체 생성: CustomOAuth2UserService.java
+     - 이메일 기준으로 유저를 찾고, 없으면 새로 등록
+     - 인증을 위한 사용자 객체인 CustomOAuth2User 를 만들어서 반환
+     - CustomOAuth2User 객체가 Spring Security 에 세션에 등록되어 사용
+  6. 인증된 사용자 클래스 정의: CustomOAuth2User.java
+     - 인증된 사용자 정보를 담고 있음
+     - 이후 Controller 에서 authentication.getPrincipal() 로 정보 접근
+  7. 로그인 성공 후 이동 경로 지정: CustomLoginSuccessHandler.java
+  8. Controller 에서 인증된 사용자 정보 활용: TodoController.java
+     
   
