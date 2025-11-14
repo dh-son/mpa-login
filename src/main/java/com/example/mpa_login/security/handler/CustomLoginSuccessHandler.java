@@ -27,7 +27,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         log.info("onAuthenticationSuccess"); // 성공 로그 출력
 
-        String targetUrl = "/"; // 로그인 성공 후 이동할 기본 URL 설정
+        String targetUrl = "/todos"; // 로그인 성공 후 이동할 기본 URL 설정
         response.sendRedirect(targetUrl); // 해당 URL로 리다이렉트
     }
 }

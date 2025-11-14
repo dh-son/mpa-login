@@ -68,5 +68,7 @@
      - 이후 Controller 에서 authentication.getPrincipal() 로 정보 접근
   7. 로그인 성공 후 이동 경로 지정: CustomLoginSuccessHandler.java
   8. Controller 에서 인증된 사용자 정보 활용: TodoController.java
-     
-  
+- 네이버 소셜 로그인
+  - OAuthAttributes: Naver OAuth2 인증 후 반환된 사용자 정보를 담는 DTO 클래스
+  - CustomOAuth2UserService: socialType = registrationId
+  - login.html: Naver 로그인 버튼

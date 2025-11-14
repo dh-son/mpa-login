@@ -35,7 +35,28 @@ public class OAuthAttributes {
     // OAuthAttributes 객체를 생성하는 정적 팩토리 모드
     // 현재는 Google만 처리하며 추후 다른 플랫폼에 따라 분기 가능
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
-        return ofGoogle(userNameAttributeName, attributes); // Google 로그인 처리
+        switch (registrationId) {
+            case "google":
+                return ofGoogle(userNameAttributeName, attributes); // Google 로그인 처리
+            //case "naver":
+            default:
+                return ofNaver("id", attributes);
+        }
+    }
+
+    // Naver 사용자 정보에서 필요한 항목을 추출하여 OAuthAttributes 객체 생성
+    private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
+        // Naver는 사용자 정보를 "response" 키 안에 Map 으로 감싸서 반환
+        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+
+        return OAuthAttributes.builder()
+                .name((String) response.get("name"))
+                .email((String) response.get("email"))
+                .picture((String) response.get("profile_image"))
+                .id((String) response.get(userNameAttributeName))
+                .attributes(response)
+                .nameAttributeKey(userNameAttributeName) // 식별자 키명 설정
+                .build();
     }
 
     // Google 로그인 전용 사용자 정보 매핑 메서드
