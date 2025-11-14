@@ -6,6 +6,10 @@ import com.example.mpa_login.user.UserRepository;
 import com.example.mpa_login.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,9 +19,11 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -78,6 +84,14 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         // null 방지를 위한 기본값 처리
         if (name == null) name = "";
+        if (registrationId.equals("github") && email == null) {
+            log.info("loadUser userRequest.getAccessToken().getTokenValue = " + userRequest.getAccessToken().getTokenValue());
+
+            // 이메일 직접조회
+            email = getEmailFromGitHub(userRequest.getAccessToken().getTokenValue());
+
+            log.info("loadUser GitHub email = " + email);
+        }
         if (email == null) email = "";
 
         // 기본 권한 부여
@@ -108,5 +122,35 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // Custom OAuth2User 객체 반환: Spring Security에서 세션에 저장됨(Spring Security의 인증 컨텍스트에 등록)
         // Authentication.getPrincipal() 등을 통해 사용자 정보 확인
         return new CustomOAuth2User(userId, email, name, authorities, attributes);
+    }
+
+    // GitHub API를 통해 사용자의 이메일을 직접 가져오는 메서드
+    private String getEmailFromGitHub(String accessToken) {
+        String url = "https://api.github.com/user/emails";
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+        headers.set("Accept", "application/vnd.github.v3+json");
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // 이메일 정보 요청
+        ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class);
+
+        List<Map<String, Object>> emails = response.getBody();
+
+        // primary 이메일 추출
+        if (emails != null) {
+            for (Map<String, Object> emailData : emails) {
+                if ((Boolean) emailData.get("primary")) {
+                    return (String) emailData.get("email");
+                }
+            }
+        }
+
+        return null;
+
     }
 }
