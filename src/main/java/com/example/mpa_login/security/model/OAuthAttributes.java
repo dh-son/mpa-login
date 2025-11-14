@@ -40,9 +40,23 @@ public class OAuthAttributes {
                 return ofGoogle(userNameAttributeName, attributes); // Google 로그인 처리
             case "naver":
                 return ofNaver("id", attributes);
-            default:
+            case "kakao":
                 return ofKakao("id", attributes);
+            default:
+                return ofGitHub("id", attributes);
         }
+    }
+
+    // Github 로그인 전용 사용자 정보 매핑 메서드
+    private static OAuthAttributes ofGitHub(String userNameAttributeName, Map<String, Object> attributes) {
+        return OAuthAttributes.builder()
+                .name((String) attributes.get("login"))
+                .email((String) attributes.get("email"))
+                .picture((String) attributes.get("avatar_url"))
+                .id("" + (Integer) attributes.get("id"))
+                .attributes(attributes)
+                .nameAttributeKey(userNameAttributeName)
+                .build();
     }
 
     // kakao 사용자 정보에서 필요한 항목을 추출하여 OAuthAttributes 객체 생성

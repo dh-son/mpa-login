@@ -76,3 +76,7 @@
   - OAuthAttributes: Kakao OAuth2 인증 후 반환된 사용자 정보를 담는 DTO 클래스
   - CustomOAuth2UserService: socialType = registrationId
   - login.html: Kakao 로그인 버튼
+- 깃허브 소셜 로그인
+  - OAuthAttributes: Github OAuth2 인증 후 반환된 사용자 정보를 담는 DTO 클래스
+  - CustomOAuth2UserService: email null 인 경우 직접 조회
+  - login.html: GitHub 로그인 버튼
