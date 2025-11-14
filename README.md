@@ -52,7 +52,7 @@
 - 소셜 로그인 기능 동작 순서
   1. 로그인 페이지에 소셜 로그인 버튼 만들기: login.html
      - /oauth2/authorization/google 경로로 요청 발생
-     - Spring Security 가 알아서 구글 로그엔 페이지로 전송
+     - Spring Security 가 요청을 가로채서 구글 로그인 페이지로 전송
   2. Spring Security 에서 소셜 로그인 설정하기: SecurityConfig.java
      - OAuth2 로그인 설정
   3. 구글 OAuth 정보 설정: application.yml
@@ -72,3 +72,7 @@
   - OAuthAttributes: Naver OAuth2 인증 후 반환된 사용자 정보를 담는 DTO 클래스
   - CustomOAuth2UserService: socialType = registrationId
   - login.html: Naver 로그인 버튼
+- 카카오 소셜 로그인
+  - OAuthAttributes: Kakao OAuth2 인증 후 반환된 사용자 정보를 담는 DTO 클래스
+  - CustomOAuth2UserService: socialType = registrationId
+  - login.html: Kakao 로그인 버튼

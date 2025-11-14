@@ -7,6 +7,7 @@ import com.example.mpa_login.user.UserService;
 import com.example.mpa_login.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,17 +41,7 @@ public class TodoController {
 
     // 사용자의 할 일 목록을 조회하여 뷰에 전달
     @GetMapping
-    public String listTodos(Authentication authentication, Model model) {
-        Object principal = authentication.getPrincipal(); // 현재 인증된 사용자 정보 조회
-
-        // 인증 정보가 없으면 로그인 페이지로 리다이렉트
-        if (principal == null) {
-            return "redirect:/login";
-        }
-
-        // OAuth 사용자 정보로 캐스팅
-        CustomOAuth2User customOAuth2User = (CustomOAuth2User) principal;
-
+    public String listTodos(@AuthenticationPrincipal CustomOAuth2User customOAuth2User, Model model) {
         // 사용자 정보 DB 조회
         Optional<User> user = userService.findByUsername(customOAuth2User.getUsername());
         if (user.isEmpty()) { // 사용자가 존재하지 않으면 로그인 페이지로 리다이렉트

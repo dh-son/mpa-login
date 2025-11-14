@@ -38,10 +38,33 @@ public class OAuthAttributes {
         switch (registrationId) {
             case "google":
                 return ofGoogle(userNameAttributeName, attributes); // Google 로그인 처리
-            //case "naver":
-            default:
+            case "naver":
                 return ofNaver("id", attributes);
+            default:
+                return ofKakao("id", attributes);
         }
+    }
+
+    // kakao 사용자 정보에서 필요한 항목을 추출하여 OAuthAttributes 객체 생성
+    private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
+        Long id = (Long) attributes.get("id"); // Kakao 사용자의 고유 ID
+
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account"); // 계정정보
+
+        // 프로필 객체에서 이름 및 프로필 이미지 추출
+        Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+        String nickname = (String) profile.get("nickname");
+        String profileImageUrl = (String) profile.get("profile_image_url");
+        String email = (String) kakaoAccount.get("email");
+
+        return OAuthAttributes.builder()
+                .name(nickname)
+                .email(email)
+                .picture(profileImageUrl)
+                .id("" + id)
+                .attributes(attributes)
+                .nameAttributeKey(userNameAttributeName) // 식별자 키명 설정
+                .build();
     }
 
     // Naver 사용자 정보에서 필요한 항목을 추출하여 OAuthAttributes 객체 생성
