@@ -32,8 +32,8 @@ public class OAuthAttributes {
         this.id = id;
     }
 
-    // OAuthAttributes 객체를 생성하는 정적 팩토리 모드
-    // 현재는 Google만 처리하며 추후 다른 플랫폼에 따라 분기 가능
+    // OAuthAttributes 객체를 생성하는 정적 팩토리 모드: 다른 플랫폼에 따라 분기 가능
+    // registrationId: google, naver, kakao, github
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
         switch (registrationId) {
             case "google":
@@ -47,6 +47,16 @@ public class OAuthAttributes {
         }
     }
 
+    /**
+     * GitHub JSON 예시:
+     * json
+     * {
+     *     "id": "123456789",
+     *     "login": "홍길동",
+     *     "email": "hong@example.com"
+     *     "avatar_url": "https://..."
+     * }
+     */
     // Github 로그인 전용 사용자 정보 매핑 메서드
     private static OAuthAttributes ofGitHub(String userNameAttributeName, Map<String, Object> attributes) {
         return OAuthAttributes.builder()
@@ -59,6 +69,20 @@ public class OAuthAttributes {
                 .build();
     }
 
+    /**
+     * Kakao JSON 예시:
+     * json
+     * {
+     *     "id": "123456789",
+     *     "kakao_account": {
+     *         "email": "hong@example.com"
+     *         "profile": {
+     *             "nickname": "홍길동",
+     *             "profile_image_url": "https://..."
+     *         }
+     *     }
+     * }
+     */
     // kakao 사용자 정보에서 필요한 항목을 추출하여 OAuthAttributes 객체 생성
     private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
         Long id = (Long) attributes.get("id"); // Kakao 사용자의 고유 ID
@@ -81,6 +105,18 @@ public class OAuthAttributes {
                 .build();
     }
 
+    /**
+     * Naver JSON 예시:
+     * json
+     * {
+     *     "response": {
+     *         "id": "123456789",
+     *         "name": "홍길동",
+     *         "email": "hong@example.com"
+     *         "profile_image": "https://..."
+     *     }
+     * }
+     */
     // Naver 사용자 정보에서 필요한 항목을 추출하여 OAuthAttributes 객체 생성
     private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
         // Naver는 사용자 정보를 "response" 키 안에 Map 으로 감싸서 반환
@@ -96,6 +132,16 @@ public class OAuthAttributes {
                 .build();
     }
 
+    /**
+     * Google JSON 예시:
+     * json
+     * {
+     *     "sub": "123456789",
+     *     "name": "홍길동",
+     *     "email": "hong@example.com"
+     *     "picture": "https://..."
+     * }
+     */
     // Google 로그인 전용 사용자 정보 매핑 메서드
     private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
         return OAuthAttributes.builder()
