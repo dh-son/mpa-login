@@ -1,5 +1,7 @@
-package com.example.mpa_login.security.model;
+package com.example.mpa_login.security;
 
+import com.example.mpa_login.security.model.CustomUser;
+import com.example.mpa_login.security.model.CustomUserDetails;
 import com.example.mpa_login.user.UserRepository;
 import com.example.mpa_login.user.model.User;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    // username을 기준으로 사용자 정보를 로딩하는 메서드
+    // Spring Security가 로그인 시 호출 하는 메서드: username(email)으로 사용자 정보를 조회함
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("CustomUserDetailsService loadUserByUsername");
@@ -42,13 +44,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         String email = user.getUsername();
         String password = user.getPassword();
 
-        // 권한 리스트 생성 및 "ROLE_USER" 권한 추가
+        // 사용자 권한 설정
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_USER"); // 기본 권한 부여
         authorities.add(authority);
 
         // 사용자 정보를 담은 CustomUserDetails 객체 생성
         // 인증이 필요한 API에서 @AuthenticationPrincipal로 꺼내서 활용
-        return new CustomUserDetails(userId, email, password, authorities);
+        return new CustomUser(userId, email, password, authorities);
     }
 }
