@@ -73,7 +73,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String email = attributes.getEmail();
         String picture = attributes.getPicture();
         String id = attributes.getId();
-        String socialType = registrationId; // 현재는 Google만 처리
+        String socialType = registrationId;
 
         log.info("loadUser nameAttributeKey = " + nameAttributeKey);
         log.info("loadUser name = " + name);
@@ -120,7 +120,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         Long userId = createdUser.getId(); // DB에 저장된 사용자 ID
 
         // Custom OAuth2User 객체 반환: Spring Security에서 세션에 저장됨(Spring Security의 인증 컨텍스트에 등록)
-        // Authentication.getPrincipal() 등을 통해 사용자 정보 확인
+        // Controller에서 @AuthenticationPrincipal or Authentication.getPrincipal() 등을 통해 사용자 정보 확인
         return new CustomOAuth2User(userId, email, name, authorities, attributes);
     }
 
@@ -151,6 +151,5 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         }
 
         return null;
-
     }
 }
