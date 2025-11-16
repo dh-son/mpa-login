@@ -99,3 +99,7 @@
        Spring Security는 사용자를 로그인 처리하고, 세션을 생성
     5. 인증 객체 반환: 인증이 완료되면 CustomUser 객체가 생성되어 SecurityContext에 저장
        이후 사용자 권한 확인이나 접근 제어 시 활용
+- 스프링 시큐리티 설정
+  - SecurityConfig: 통합 로그인 설정 (일반로그인 + 소셜로그인)
+- 로그인한 사용자 정보 이용
+  - TodoController: 통합 사용자 객체 클래스(CustomUser) 로 변경

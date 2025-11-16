@@ -1,12 +1,10 @@
 package com.example.mpa_login.todo;
 
-import com.example.mpa_login.security.model.CustomOAuth2User;
-import com.example.mpa_login.security.model.CustomUserDetails;
+import com.example.mpa_login.security.model.CustomUser;
 import com.example.mpa_login.todo.model.Todo;
 import com.example.mpa_login.user.UserService;
 import com.example.mpa_login.user.model.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +24,16 @@ import java.util.Optional;
  * 2. 사용자가 /todos 접근 -> 해당 사용자에게 연결된 Todo 목록 조회
  * 3. 할 일 추가/삭제/수정 -> 사용자 ID로 검증 후 조작
  */
+
+/**
+ * 로그인한 사용자 정보를 처리하는 방식
+ * Object principal = authentication.getPrincipal();
+ *
+ * public String myPage(@AuthenticationPrincipal CustomUser customUser) {
+ *     // customUser.getUsername() 등으로 바로 사용 가능
+ * }
+ */
+
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/todos") // /todos 경로 이하의 요청을 처리
@@ -34,16 +42,11 @@ public class TodoController {
     private final TodoService todoService;
     private final UserService userService;
 
-    /**
-     * 공통된 인증 처리 방식
-     * CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-     */
-
     // 사용자의 할 일 목록을 조회하여 뷰에 전달
     @GetMapping
-    public String listTodos(@AuthenticationPrincipal CustomOAuth2User customOAuth2User, Model model) {
+    public String listTodos(@AuthenticationPrincipal CustomUser customUser, Model model) {
         // 사용자 정보 DB 조회
-        Optional<User> user = userService.findByUsername(customOAuth2User.getUsername());
+        Optional<User> user = userService.findByUsername(customUser.getUsername());
         if (user.isEmpty()) { // 사용자가 존재하지 않으면 로그인 페이지로 리다이렉트
             return "redirect:/login";
         }
@@ -56,18 +59,9 @@ public class TodoController {
 
     // 새로운 할 일을 추가하는 메서드
     @PostMapping("/add")
-    public String addTodo(Authentication authentication, @ModelAttribute Todo todo) {
-        Object principal = authentication.getPrincipal();
-
-        // 인증 정보가 없으면 로그인 페이지로 리다이렉트
-        if (principal == null) {
-            return "redirect:/login";
-        }
-
-        CustomOAuth2User customOAuth2User = (CustomOAuth2User) principal;
-
+    public String addTodo(@AuthenticationPrincipal CustomUser customUser, @ModelAttribute Todo todo) {
         User user = new User(); // 사용자 객체 생성
-        user.setId(customOAuth2User.getUserId()); // 로그인한 사용자 ID 설정
+        user.setId(customUser.getUserId()); // 로그인한 사용자 ID 설정
 
         // 할 일을 사용자와 함께 저장
         todoService.addTodo(todo, user);
@@ -76,18 +70,9 @@ public class TodoController {
 
     // 특정 ID의 할 일을 삭제하는 메서드
     @PostMapping("/delete/{id}")
-    public String deleteTodo(@PathVariable("id") Long id, Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-
-        // 인증 정보가 없으면 로그인 페이지로 리다이렉트
-        if (principal == null) {
-            return "redirect:/login";
-        }
-
-        CustomOAuth2User customOAuth2User = (CustomOAuth2User) principal;
-
+    public String deleteTodo(@PathVariable("id") Long id, @AuthenticationPrincipal CustomUser customUser) {
         User user = new User();
-        user.setId(customOAuth2User.getUserId());
+        user.setId(customUser.getUserId());
 
         // 사용자 정보와 함께 해당 ID의 할 일을 삭제
         todoService.deleteTodoById(id, user);
@@ -96,17 +81,8 @@ public class TodoController {
 
     // 특정 ID의 할 일을 수정하기 위해 데이터를 조회하는 메서드
     @GetMapping("/edit/{id}")
-    public String editTodo(@PathVariable("id") Long id, Model model, Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-
-        // 인증 정보가 없으면 로그인 페이지로 리다이렉트
-        if (principal == null) {
-            return "redirect:/login";
-        }
-
-        CustomOAuth2User customOAuth2User = (CustomOAuth2User) principal;
-
-        Long userId = customOAuth2User.getUserId();
+    public String editTodo(@PathVariable("id") Long id, Model model, @AuthenticationPrincipal CustomUser customUser) {
+        Long userId = customUser.getUserId();
 
         // 해당 ID의 할 일 조회
         Optional<Todo> todo = todoService.getTodoById(id);
@@ -126,19 +102,10 @@ public class TodoController {
             @PathVariable("id") Long id, // 수정할 할 일 ID
             @RequestParam("title") String title, // 새 제목
             @RequestParam("description") String description, // 새 설명
-            Authentication authentication // 인증정보
+            @AuthenticationPrincipal CustomUser customUser // 인증정보
     ) {
-        Object principal = authentication.getPrincipal();
-
-        // 인증 정보가 없으면 로그인 페이지로 리다이렉트
-        if (principal == null) {
-            return "redirect:/login";
-        }
-
-        CustomOAuth2User customOAuth2User = (CustomOAuth2User) principal;
-
         User user = new User();
-        user.setId(customOAuth2User.getUserId());
+        user.setId(customUser.getUserId());
 
         // 수정된 정보로 업데이트
         todoService.updateTodo(id, title, description, user);
