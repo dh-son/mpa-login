@@ -1,6 +1,7 @@
 package com.example.mpa_login.security;
 
 import com.example.mpa_login.security.model.CustomOAuth2User;
+import com.example.mpa_login.security.model.CustomUser;
 import com.example.mpa_login.security.model.OAuthAttributes;
 import com.example.mpa_login.user.UserRepository;
 import com.example.mpa_login.user.model.User;
@@ -40,19 +41,19 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private final UserRepository userRepository;
 
-    // SecurityConfig에서 주입받는 대시 직접 생성하여 사용 (순환참조 방지)
+    // SecurityConfig에서 주입받는 대신 직접 생성하여 사용 (순환참조 방지)
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    // OAuth2 로그인 시 사용자 정보를 불러오고 처리하는 메서드
+    // OAuth2 로그인 성공 시 사용자 정보를 로드하고 사용자 등록 또는 조회 및 반환
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("loadUser"); // 메서드 진입 로그
 
-        // 기본 OAuth2UserService를 통해 사용자 정보 조회
+        // Spring Security 기본 OAuth2 사용자 서비스
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-        // OAuth2 서비스 등록 ID (ex: google, kakao 등)
+        // 현재 로그인 중인 소셜 플랫폼 (ex: google, kakao 등)
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
         // 사용자 식별 키 (ex: sub, id)
@@ -64,7 +65,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         log.info("loadUser registrationId = " + registrationId);
         log.info("loadUser userNameAttributeName = " + userNameAttributeName);
 
-        // OAuthAttributes 객체로 사용자 정보 매핑
+        // 각 소셜 플랫폼별 사용자 정보 파싱
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         // 속성 정보 추출
@@ -75,6 +76,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String id = attributes.getId();
         String socialType = registrationId;
 
+        // GitHub email 조회
+        if (registrationId.equals("github") && email == null) {
+            log.info("loadUser userRequest.getAccessToken().getTokenValue = " + userRequest.getAccessToken().getTokenValue());
+
+            // 이메일 직접조회
+            email = getEmailFromGitHub(userRequest.getAccessToken().getTokenValue());
+
+            log.info("loadUser GitHub email = " + email);
+        }
+
         log.info("loadUser nameAttributeKey = " + nameAttributeKey);
         log.info("loadUser name = " + name);
         log.info("loadUser email = " + email);
@@ -84,22 +95,14 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         // null 방지를 위한 기본값 처리
         if (name == null) name = "";
-        if (registrationId.equals("github") && email == null) {
-            log.info("loadUser userRequest.getAccessToken().getTokenValue = " + userRequest.getAccessToken().getTokenValue());
-
-            // 이메일 직접조회
-            email = getEmailFromGitHub(userRequest.getAccessToken().getTokenValue());
-
-            log.info("loadUser GitHub email = " + email);
-        }
         if (email == null) email = "";
 
-        // 기본 권한 부여
+        // 사용자 권한 설정 (기본 ROLE_USER)
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_USER"); // 일반 사용자 권한
         authorities.add(authority);
 
-        // 이메일로 사용자 존재 여부 조회
+        // 이메일 기준으로 사용자 조회
         Optional<User> optionalUser = userRepository.findByUsername(email);
 
         User createdUser = null;
@@ -108,7 +111,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         if (optionalUser.isEmpty()) {
             User user = new User();
             user.setUsername(email);
-            user.setPassword("1234"); // 기본 비밀번호 설정 (임시 값)
+            user.setPassword(passwordEncoder.encode("1234")); // 기본 비밀번호 설정 (임시 값)
             user.setSocialId(id);
             user.setSocialType(socialType);
 
@@ -117,11 +120,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             createdUser = optionalUser.orElseThrow(); // Optional에서 User 꺼냄
         }
 
-        Long userId = createdUser.getId(); // DB에 저장된 사용자 ID
+        Long userId = createdUser.getId(); // DB 사용자 ID
 
-        // Custom OAuth2User 객체 반환: Spring Security에서 세션에 저장됨(Spring Security의 인증 컨텍스트에 등록)
+        // 사용자 정보를 담은 CustomUser 객체 반환: Spring Security에서 세션에 저장됨(Spring Security의 인증 컨텍스트에 등록)
         // Controller에서 @AuthenticationPrincipal or Authentication.getPrincipal() 등을 통해 사용자 정보 확인
-        return new CustomOAuth2User(userId, email, name, authorities, attributes);
+        return new CustomUser(userId, email, authorities, attributes);
     }
 
     // GitHub API를 통해 사용자의 이메일을 직접 가져오는 메서드

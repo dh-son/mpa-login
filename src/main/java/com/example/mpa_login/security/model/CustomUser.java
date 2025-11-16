@@ -36,11 +36,11 @@ public class CustomUser implements UserDetails, OAuth2User {
     }
 
     // OAuth2 로그인 사용자를 위한 생성자
-    public CustomUser(Long userId, String username, Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes) {
+    public CustomUser(Long userId, String username, Collection<? extends GrantedAuthority> authorities, OAuthAttributes oAuthAttributes) {
         this.userId = userId;
         this.username = username;
         this.authorities = authorities;
-        this.attributes = attributes;
+        this.attributes = oAuthAttributes.getAttributes();
         this.password = null;
     }
 
