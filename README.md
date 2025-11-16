@@ -86,3 +86,5 @@
 - 통합 사용자 객체 클래스
   - CustomUser: 일반 로그인과 OAuth2 로그인을 모두 처리할 수 있는 통합 사용자 인증 객체
                 UserDetails, OAuth2User 인터페이스 구현
+- 소설 로그인 사용자 정보 처리 클래스
+  - CustomOAuth2UserService: 사용자 정보를 담은 CustomUser 객체 반환 
