@@ -87,4 +87,15 @@
   - CustomUser: 일반 로그인과 OAuth2 로그인을 모두 처리할 수 있는 통합 사용자 인증 객체
                 UserDetails, OAuth2User 인터페이스 구현
 - 소설 로그인 사용자 정보 처리 클래스
-  - CustomOAuth2UserService: 사용자 정보를 담은 CustomUser 객체 반환 
+  - CustomOAuth2UserService: 사용자 정보를 담은 CustomUser 객체 반환
+- 일반 로그인 사용자 정보 처리 클래스
+  - CustomUserDetailService: 사용자 정보를 담은 CustomUser 객체 반환
+  - 로그인 인증 절차
+    1. 로그인 시도: 로그인 페이지에서 이메일과 비밀번호를 입력하고 로그인 버튼을 누르면 이 정보가 서버로 전송
+    2. 시큐리티필터: Spring Security는 이 로그인 요청을 가로채고, 내부적으로 loadUserByUsername()라는 메서드 호출
+       CustomUserDetailsService 사용자의 정보를 가져오는 핵심 기능
+    3. 사용자 정보 조회: loadUserByUsername() 메서드는 전달받은 이메일 기준으로 DB에서 사용자 조회
+    4. 인증 성공: 사용자가 존재하고 입력한 비밀번호도 일치한다면 인증에 성공
+       Spring Security는 사용자를 로그인 처리하고, 세션을 생성
+    5. 인증 객체 반환: 인증이 완료되면 CustomUser 객체가 생성되어 SecurityContext에 저장
+       이후 사용자 권한 확인이나 접근 제어 시 활용
